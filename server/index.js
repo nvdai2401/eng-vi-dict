@@ -56,7 +56,7 @@ rl.on('line', function (line) {
 		// tempSynonymous = line
 		if (definitions[definitions.length - 1]) {
 			definitions[definitions.length - 1].synonymous.push(
-				...line.slice(1, line.length).split('; ')
+				...line.slice(1, line.length).replace('+', ':').split('; ')
 			)
 		}
 	}
@@ -77,19 +77,20 @@ app.get('/suggestions', (req, res) => {
 	console.log('call Suggestions')
 	const searchText = req.query.searchQuery
 	const foundSuggestions = AVLTree.findSuggestions(searchText)
+	console.log(foundSuggestions)
 	if (!mapSuggestions.has(searchText)) {
 		mapSuggestions.set(searchText, foundSuggestions)
 	}
 	const matchedWords = foundSuggestions
 		.traverseInOrder()
 		.filter((word) => word.slice(0, searchText.length) === searchText)
-	console.log(matchedWords, mapSuggestions)
 	res.json(matchedWords)
 })
 
 app.get('/search', (req, res) => {
 	console.log(req.query.searchQuery)
 	const searchQuery = req.query.searchQuery
+	if (!searchQuery) return
 	const result = AVLTree.find(searchQuery)
 	res.json(result.word)
 })

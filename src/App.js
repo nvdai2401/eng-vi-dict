@@ -1,23 +1,48 @@
 import React, { useState } from 'react'
+import AwesomeDebouncePromise from 'awesome-debounce-promise'
 import logo from './evdict.svg'
 import './App.scss'
+
+const getSuggestions = (searchText) =>
+	fetch(
+		`http://localhost:4000/suggestions?searchQuery=${searchText}`
+	).then((res) => res.json())
+
+const getWordInfo = (searchText) =>
+	fetch(`http://localhost:4000/search?searchQuery=${searchText}`).then((res) =>
+		res.json()
+	)
+const getSuggestionsDebounce = AwesomeDebouncePromise(getSuggestions, 500)
 
 const App = () => {
 	const [searchText, setSearchText] = useState('adapt')
 	const [suggestionVisible, setSuggestionVisible] = useState(false)
+	const [suggestions, setSuggestions] = useState([])
 	const [wordInfo, setWordInfo] = useState({})
 
 	const toggleSuggestion = (value) => {
 		setSuggestionVisible(value)
 	}
 
-	const onSubmit = () => {
-		fetch(`http://localhost:4000/search?searchQuery=${searchText}`)
-			.then((res) => res.json())
-			.then((data) => setWordInfo(data))
+	const onSubmit = async () => {
+		const result = await getWordInfo(searchText)
+		setWordInfo(result)
 	}
 
-	console.log(wordInfo)
+	const handleOnChange = async (searchText) => {
+		setSearchText(searchText)
+		if (!searchText) return
+		const result = await getSuggestionsDebounce(searchText)
+		console.log(result)
+		setSuggestions(result)
+	}
+
+	const handleOnSelectSuggestion = async (suggestion) => {
+		console.log(suggestion)
+		setSearchText(suggestion)
+		const result = await getWordInfo(suggestion)
+		setWordInfo(result)
+	}
 
 	return (
 		<div className='root'>
@@ -29,32 +54,25 @@ const App = () => {
 						type='search'
 						value={searchText}
 						onFocus={() => toggleSuggestion(true)}
-						onBlur={() => toggleSuggestion(false)}
-						onChange={(e) => setSearchText(e.target.value)}
+						onBlur={() => setTimeout(() => toggleSuggestion(false), 0)}
+						onChange={(e) => handleOnChange(e.target.value)}
 					/>
 					<button onClick={onSubmit}>Search</button>
-					{suggestionVisible && (
+					{suggestions.length && suggestionVisible ? (
 						<ul className='suggestions'>
-							<li>Lorem ipsum</li>
-							<li>Lorem ipsum</li>
-							<li>Lorem ipsum</li>
-							<li>Lorem ipsum</li>
-							<li>Lorem ipsum</li>
-							<li>Lorem ipsum</li>
-							<li>Lorem ipsum</li>
-							<li>Lorem ipsum</li>
-							<li>Lorem ipsum</li>
-							<li>Lorem ipsum</li>
-							<li>Lorem ipsum</li>
-							<li>Lorem ipsum</li>
-							<li>Lorem ipsum</li>
-							<li>Lorem ipsum</li>
-							<li>Lorem ipsum</li>
-							<li>Lorem ipsum</li>
-							<li>Lorem ipsum</li>
-							<li>Lorem ipsum</li>
+							{suggestions.map((suggestion, index) => (
+								<li
+									key={index}
+									onClick={() => {
+										console.log('call')
+										handleOnSelectSuggestion(suggestion)
+									}}
+								>
+									{suggestion}
+								</li>
+							))}
 						</ul>
-					)}
+					) : null}
 				</div>
 			</div>
 
