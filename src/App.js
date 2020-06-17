@@ -3,12 +3,21 @@ import logo from './evdict.svg'
 import './App.scss'
 
 const App = () => {
-	const [searchText, setSearchText] = useState('')
+	const [searchText, setSearchText] = useState('adapt')
 	const [suggestionVisible, setSuggestionVisible] = useState(false)
+	const [wordInfo, setWordInfo] = useState({})
 
 	const toggleSuggestion = (value) => {
 		setSuggestionVisible(value)
 	}
+
+	const onSubmit = () => {
+		fetch(`http://localhost:4000/search?searchQuery=${searchText}`)
+			.then((res) => res.json())
+			.then((data) => setWordInfo(data))
+	}
+
+	console.log(wordInfo)
 
 	return (
 		<div className='root'>
@@ -23,7 +32,7 @@ const App = () => {
 						onBlur={() => toggleSuggestion(false)}
 						onChange={(e) => setSearchText(e.target.value)}
 					/>
-					<button>Search</button>
+					<button onClick={onSubmit}>Search</button>
 					{suggestionVisible && (
 						<ul className='suggestions'>
 							<li>Lorem ipsum</li>
@@ -50,38 +59,32 @@ const App = () => {
 			</div>
 
 			<div className='main'>
-				<p className='word'>Word</p>
-				<p className='pronunciation'>/ə'gouiɳ/</p>
-				<div className='definition'>
-					<p className='type'>tính từ & phó từ</p>
-					<div>đang chạy, đang chuyển động; đang hoạt động, đang tiến hành</div>
-					<p>to move counters of an abacus</p>
-					<p>to work an abacus+ tính bằng bàn tính, gảy bàn tính</p>
-				</div>
-				<div className='definition'>
-					<p className='type'>tính từ & phó từ</p>
-					<div>đang chạy, đang chuyển động; đang hoạt động, đang tiến hành</div>
-					<p>to move counters of an abacus</p>
-					<p>to work an abacus+ tính bằng bàn tính, gảy bàn tính</p>
-				</div>
-				<div className='definition'>
-					<p className='type'>tính từ & phó từ</p>
-					<div>đang chạy, đang chuyển động; đang hoạt động, đang tiến hành</div>
-					<p>to move counters of an abacus</p>
-					<p>to work an abacus+ tính bằng bàn tính, gảy bàn tính</p>
-				</div>
-				<div className='definition'>
-					<p className='type'>tính từ & phó từ</p>
-					<div>đang chạy, đang chuyển động; đang hoạt động, đang tiến hành</div>
-					<p>to move counters of an abacus</p>
-					<p>to work an abacus+ tính bằng bàn tính, gảy bàn tính</p>
-				</div>
-				<div className='definition'>
-					<p className='type'>tính từ & phó từ</p>
-					<div>đang chạy, đang chuyển động; đang hoạt động, đang tiến hành</div>
-					<p>to move counters of an abacus</p>
-					<p>to work an abacus+ tính bằng bàn tính, gảy bàn tính</p>
-				</div>
+				{wordInfo.word ? (
+					<>
+						<p className='word'>{wordInfo.word}</p>
+						<p className='pronunciation'>{wordInfo.pronunciation}</p>
+						{wordInfo.definitions.length &&
+							wordInfo.definitions.map((def, index) => (
+								<div key={index} className='definition'>
+									<p className='type'>{def.type}</p>
+									<ul className='meaning'>
+										{def.meanings.map((meaning, index) => (
+											<li key={index}>{meaning}</li>
+										))}
+									</ul>
+									<ul className='synonymous'>
+										{def.synonymous.length
+											? def.synonymous.map((synonymous, index) => (
+													<li key={index}>{synonymous}</li>
+											  ))
+											: null}
+									</ul>
+								</div>
+							))}
+					</>
+				) : (
+					<div>Welcome to EVDict</div>
+				)}
 			</div>
 		</div>
 	)
