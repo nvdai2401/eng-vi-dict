@@ -26,19 +26,22 @@ const App = () => {
 
 	const onSubmit = async () => {
 		const result = await getWordInfo(searchText)
-		setWordInfo(result)
+		console.log(result)
+		if (result) {
+			setWordInfo(result)
+		}
 	}
 
 	const handleOnChange = async (searchText) => {
 		setSearchText(searchText)
 		if (!searchText) return
 		const result = await getSuggestionsDebounce(searchText)
-		console.log(result)
-		setSuggestions(result)
+		if (result) {
+			setSuggestions(result)
+		}
 	}
 
 	const handleOnSelectSuggestion = async (suggestion) => {
-		console.log(suggestion)
 		setSearchText(suggestion)
 		const result = await getWordInfo(suggestion)
 		setWordInfo(result)
@@ -54,7 +57,7 @@ const App = () => {
 						type='search'
 						value={searchText}
 						onFocus={() => toggleSuggestion(true)}
-						onBlur={() => setTimeout(() => toggleSuggestion(false), 0)}
+						onBlur={() => setTimeout(() => toggleSuggestion(false), 150)}
 						onChange={(e) => handleOnChange(e.target.value)}
 					/>
 					<button onClick={onSubmit}>Search</button>

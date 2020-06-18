@@ -53,7 +53,6 @@ rl.on('line', function (line) {
 			)
 		}
 	} else if (line[0] === '=') {
-		// tempSynonymous = line
 		if (definitions[definitions.length - 1]) {
 			definitions[definitions.length - 1].synonymous.push(
 				...line.slice(1, line.length).replace('+', ':').split('; ')
@@ -74,10 +73,13 @@ app.get('/', (req, res) => {
 })
 
 app.get('/suggestions', (req, res) => {
-	console.log('call Suggestions')
 	const searchText = req.query.searchQuery
 	const foundSuggestions = AVLTree.findSuggestions(searchText)
-	console.log(foundSuggestions)
+
+	if (!foundSuggestions) {
+		res.json([])
+		return
+	}
 	if (!mapSuggestions.has(searchText)) {
 		mapSuggestions.set(searchText, foundSuggestions)
 	}
@@ -88,11 +90,10 @@ app.get('/suggestions', (req, res) => {
 })
 
 app.get('/search', (req, res) => {
-	console.log(req.query.searchQuery)
 	const searchQuery = req.query.searchQuery
-	if (!searchQuery) return
 	const result = AVLTree.find(searchQuery)
-	res.json(result.word)
+
+	res.json(result ? result.word : result)
 })
 
 app.listen(port, () =>
