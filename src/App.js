@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import AwesomeDebouncePromise from 'awesome-debounce-promise'
 import logo from './evdict.svg'
 import './App.scss'
@@ -15,20 +15,36 @@ const getWordInfo = (searchText) =>
 const getSuggestionsDebounce = AwesomeDebouncePromise(getSuggestions, 500)
 
 const App = () => {
-	const [searchText, setSearchText] = useState('adapt')
+	const [searchText, setSearchText] = useState('')
 	const [suggestionVisible, setSuggestionVisible] = useState(false)
 	const [suggestions, setSuggestions] = useState([])
 	const [wordInfo, setWordInfo] = useState({})
+
+	useEffect(() => {
+		const history = JSON.parse(localStorage.getItem('SEARCH_HISTORY'))
+		if (!history) {
+			console.log('mounted')
+			localStorage.setItem('SEARCH_HISTORY', JSON.stringify([]))
+		}
+	}, [])
 
 	const toggleSuggestion = (value) => {
 		setSuggestionVisible(value)
 	}
 
+	const updateSearchHistory = (word) => {
+		const history = JSON.parse(localStorage.getItem('SEARCH_HISTORY'))
+		if (!history.includes(word)) {
+			localStorage.setItem('SEARCH_HISTORY', JSON.stringify([...history, word]))
+		}
+	}
+
 	const onSubmit = async () => {
+		if (wordInfo.word === searchText) return
 		const result = await getWordInfo(searchText)
-		console.log(result)
 		if (result) {
 			setWordInfo(result)
+			updateSearchHistory(searchText)
 		}
 	}
 
@@ -42,9 +58,17 @@ const App = () => {
 	}
 
 	const handleOnSelectSuggestion = async (suggestion) => {
+		if (suggestion === searchText) return
 		setSearchText(suggestion)
 		const result = await getWordInfo(suggestion)
 		setWordInfo(result)
+		updateSearchHistory(suggestion)
+	}
+
+	const handleOnFocusSearchInput = () => {
+		const history = JSON.parse(localStorage.getItem('SEARCH_HISTORY'))
+		if (history.length) setSuggestions(history)
+		toggleSuggestion(true)
 	}
 
 	return (
@@ -56,7 +80,7 @@ const App = () => {
 						placeholder='Tra từ điển Anh Việt'
 						type='search'
 						value={searchText}
-						onFocus={() => toggleSuggestion(true)}
+						onFocus={handleOnFocusSearchInput}
 						onBlur={() => setTimeout(() => toggleSuggestion(false), 150)}
 						onChange={(e) => handleOnChange(e.target.value)}
 					/>
@@ -66,10 +90,7 @@ const App = () => {
 							{suggestions.map((suggestion, index) => (
 								<li
 									key={index}
-									onClick={() => {
-										console.log('call')
-										handleOnSelectSuggestion(suggestion)
-									}}
+									onClick={() => handleOnSelectSuggestion(suggestion)}
 								>
 									{suggestion}
 								</li>
@@ -104,7 +125,14 @@ const App = () => {
 							))}
 					</>
 				) : (
-					<div>Welcome to EVDict</div>
+					<div className='welcome-text'>
+						Welcome to <span>E</span>
+						<span>V</span>
+						<span>D</span>
+						<span>i</span>
+						<span>c</span>
+						<span>t</span>!
+					</div>
 				)}
 			</div>
 		</div>

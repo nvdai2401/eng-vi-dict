@@ -73,6 +73,7 @@ app.get('/', (req, res) => {
 })
 
 app.get('/suggestions', (req, res) => {
+	console.log('suggestions')
 	const searchText = req.query.searchQuery
 	const foundSuggestions = AVLTree.findSuggestions(searchText)
 
@@ -80,9 +81,18 @@ app.get('/suggestions', (req, res) => {
 		res.json([])
 		return
 	}
-	if (!mapSuggestions.has(searchText)) {
+
+	if (mapSuggestions.has(searchText)) {
+		const suggestions = mapSuggestions.get(searchText)
+		const matchedWords = suggestions
+			.traverseInOrder()
+			.filter((word) => word.slice(0, searchText.length) === searchText)
+		res.json(matchedWords)
+		return
+	} else {
 		mapSuggestions.set(searchText, foundSuggestions)
 	}
+
 	const matchedWords = foundSuggestions
 		.traverseInOrder()
 		.filter((word) => word.slice(0, searchText.length) === searchText)
