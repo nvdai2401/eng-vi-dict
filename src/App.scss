@@ -1,6 +1,10 @@
-$color-border: #DFE1E5;
-$color-white: #FFFFFF;
-$color-text: #1D2A57;
+$color-border: #dfe1e5;
+$color-white: #ffffff;
+$color-red: #ea4335;
+$color-green: #34a853;
+$color-blue: #4285f4;
+$color-yellow: #fbbc05;
+$color-text: #1d2a57;
 
 .root {
   position: relative;
@@ -57,11 +61,12 @@ $color-text: #1D2A57;
   button {
     height: 100%;
     width: 18%;
+    font-size: 1rem;
     background-color: $color-white;
     outline: none;
     border: 1px solid $color-border;
     border-radius: 3px;
-    color: #4285f4;
+    color: $color-blue;
     font-weight: 700;
     cursor: pointer;
 
@@ -99,7 +104,7 @@ $color-text: #1D2A57;
       list-style: none;
 
       &:hover {
-        color: #4285f4;
+        color: $color-blue;
         font-weight: 700;
       }
 
@@ -152,29 +157,40 @@ $color-text: #1D2A57;
     font-weight: 700;
     span {
       &:nth-child(1) {
-        color: #4285f4;
+        color: $color-blue;
       }
       
       &:nth-child(2) {
-        color: #ea4335;
+        color: $color-red;
       }
 
       &:nth-child(3) {
-        color: #fbbc05;
+        color: $color-yellow;
       }
 
       &:nth-child(4) {
-        color: #4285f4;
+        color: $color-blue;
       }
 
       &:nth-child(5) {
-        color: #34a853;
+        color: $color-green;
       }
 
       &:nth-child(6) {
-        color: #ea4335;
+        color: $color-red;
       }
     }
+  }
+}
+
+.footer {
+  position: fixed;
+  bottom: 24px;
+
+  a {
+    text-decoration: none;
+    color: $color-blue;
+    font-weight: 700;
   }
 }
 

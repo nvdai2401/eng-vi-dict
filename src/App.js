@@ -1,17 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import AwesomeDebouncePromise from 'awesome-debounce-promise'
+
+import { getSuggestions, getWordInfo } from './api'
+import { getSearchHistory, setSearchHistory } from './utils'
+
 import logo from './evdict.svg'
 import './App.scss'
 
-const getSuggestions = (searchText) =>
-	fetch(
-		`http://localhost:4000/suggestions?searchQuery=${searchText}`
-	).then((res) => res.json())
-
-const getWordInfo = (searchText) =>
-	fetch(`http://localhost:4000/search?searchQuery=${searchText}`).then((res) =>
-		res.json()
-	)
 const getSuggestionsDebounce = AwesomeDebouncePromise(getSuggestions, 500)
 
 const App = () => {
@@ -21,21 +16,16 @@ const App = () => {
 	const [wordInfo, setWordInfo] = useState({})
 
 	useEffect(() => {
-		const history = JSON.parse(localStorage.getItem('SEARCH_HISTORY'))
+		const history = getSearchHistory()
 		if (!history) {
-			console.log('mounted')
-			localStorage.setItem('SEARCH_HISTORY', JSON.stringify([]))
+			setSearchHistory([])
 		}
 	}, [])
 
-	const toggleSuggestion = (value) => {
-		setSuggestionVisible(value)
-	}
-
 	const updateSearchHistory = (word) => {
-		const history = JSON.parse(localStorage.getItem('SEARCH_HISTORY'))
+		const history = getSearchHistory()
 		if (!history.includes(word)) {
-			localStorage.setItem('SEARCH_HISTORY', JSON.stringify([...history, word]))
+			setSearchHistory([word, ...history])
 		}
 	}
 
@@ -48,7 +38,7 @@ const App = () => {
 		}
 	}
 
-	const handleOnChange = async (searchText) => {
+	const handleOnInputChange = async (searchText) => {
 		setSearchText(searchText)
 		if (!searchText) return
 		const result = await getSuggestionsDebounce(searchText)
@@ -66,9 +56,9 @@ const App = () => {
 	}
 
 	const handleOnFocusSearchInput = () => {
-		const history = JSON.parse(localStorage.getItem('SEARCH_HISTORY'))
+		const history = getSearchHistory()
 		if (history.length) setSuggestions(history)
-		toggleSuggestion(true)
+		setSuggestionVisible(true)
 	}
 
 	return (
@@ -81,8 +71,8 @@ const App = () => {
 						type='search'
 						value={searchText}
 						onFocus={handleOnFocusSearchInput}
-						onBlur={() => setTimeout(() => toggleSuggestion(false), 150)}
-						onChange={(e) => handleOnChange(e.target.value)}
+						onBlur={() => setTimeout(() => setSuggestionVisible(false), 200)}
+						onChange={(e) => handleOnInputChange(e.target.value)}
 					/>
 					<button onClick={onSubmit}>Search</button>
 					{suggestions.length && suggestionVisible ? (
@@ -134,6 +124,19 @@ const App = () => {
 						<span>t</span>!
 					</div>
 				)}
+			</div>
+
+			<div className='footer'>
+				<span>
+					© Developed by{' '}
+					<a
+						href='https://www.linkedin.com/in/nvdai2401/'
+						target='_blank'
+						rel='noopener noreferrer'
+					>
+						Michael
+					</a>
+				</span>
 			</div>
 		</div>
 	)
