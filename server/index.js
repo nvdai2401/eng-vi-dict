@@ -36,8 +36,8 @@ rl.on('line', function (line) {
 	}
 
 	let tempType = ''
-	let tempSynonymous = []
-	let tempMeanings = []
+	const tempSynonymous = []
+	const tempMeanings = []
 
 	if (line[0] === '*') {
 		tempType = line.slice(3, line.length)
@@ -73,7 +73,6 @@ app.get('/', (req, res) => {
 })
 
 app.get('/suggestions', (req, res) => {
-	console.log('suggestions')
 	const searchText = req.query.searchQuery
 	const foundSuggestions = AVLTree.findSuggestions(searchText)
 
