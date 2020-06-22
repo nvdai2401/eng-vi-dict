@@ -1,5 +1,5 @@
 const BinaryTreeNode = require('../BinaryTreeNode')
-const Comparator = require('../comparator/Comparator')
+const Comparator = require('../utils/comparator/Comparator')
 
 class BinarySearchTreeNode extends BinaryTreeNode {
 	/**

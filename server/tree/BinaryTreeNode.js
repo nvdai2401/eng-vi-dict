@@ -1,4 +1,4 @@
-const Comparator = require('./comparator/Comparator')
+const Comparator = require('./utils/comparator/Comparator')
 
 class BinaryTreeNode {
 	/**
