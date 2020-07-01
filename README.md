@@ -22,3 +22,5 @@
 ## Demo
 
 ![Home page](/images/homepage.PNG)
+![Result page](/images/result_page.PNG)
+![Suggestion page](/images/suggestion.PNG)
