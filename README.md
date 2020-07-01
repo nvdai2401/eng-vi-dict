@@ -21,6 +21,6 @@
 
 ## Demo
 
-![Home page](/images/homepage.PNG)
-![Result page](/images/result_page.PNG)
-![Suggestion page](/images/suggestion.PNG)
+<p align="center"><img src="/images/homepage.PNG" /></p>
+<p align="center"><img src="/images/suggestion.PNG" /></p>
+<p align="center"><img src="/images/result_page.PNG" /></p>
