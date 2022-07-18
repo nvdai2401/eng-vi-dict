@@ -1,0 +1,23 @@
+name: Test dispatch
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Dispatch action 2
+        run: |
+          curl -X POST https://api.github.com/repos/nvdai2401/test-dispatch-action/dispatches \
+          -H "Accept: application/vnd.github+json" \ 
+          -u "nvdai2401:${{ secrets.AUTH_TOKEN_WORKFLOW_DISPATCH }}"" \
+          -d '{"event_type":"test_result_dispatch"}'
+        env:
+          GITHUB_TOKEN: ${{ secrets.AUTH_TOKEN_WORKFLOW_DISPATCH }}
+
+          
+        
