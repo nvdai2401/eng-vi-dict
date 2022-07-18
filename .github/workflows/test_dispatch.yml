@@ -10,8 +10,16 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Dispatch action
-        run: gh workflow run --repo nvdai2401/test-dispatch-action test_result.yml
+      - name: Dispatch action 2
+        run: |
+          curl \
+          -X POST \
+          -H "Accept: application/vnd.github+json" \ 
+          -H "Authorization: token ${{ secrets.AUTH_TOKEN_WORKFLOW_DISPATCH }}" \
+          https://api.github.com/repos/nvdai2401/test-dispatch-action/dispatches \
+          -d '{"event_type":"test_result"}'
         env:
           GITHUB_TOKEN: ${{ secrets.AUTH_TOKEN_WORKFLOW_DISPATCH }}
+
+          
         
