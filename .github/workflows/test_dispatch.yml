@@ -1,0 +1,17 @@
+name: Test dispatch
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Dispatch action
+        run: gh workflow run --repo nvdai2401/test-dispatch-action test_result
+        env:
+          GITHUB_TOKEN: ${{ secrets.AUTH_TOKEN_WORKFLOW_DISPATCH }}
+        
